@@ -11,13 +11,25 @@ defmodule ExAssignment.TodosTest do
     @invalid_attrs %{done: nil, priority: nil, title: nil}
 
     test "list_todos/0 returns all todos" do
-      todo = todo_fixture()
+       todo = todo_fixture()
       assert Todos.list_todos() == [todo]
     end
 
     test "get_todo!/1 returns the todo with given id" do
       todo = todo_fixture()
       assert Todos.get_todo!(todo.id) == todo
+    end
+
+    test " get_recommended/0 return a recommended todo" do
+      todos = [
+        todo_fixture(),
+        todo_fixture(%{priority: 20}),
+        todo_fixture(%{priority: 50})
+      ]
+
+      recommended_todo = Todos.get_recommended(todos)
+
+      assert Enum.member?(todos, recommended_todo)
     end
 
     test "create_todo/1 with valid data creates a todo" do

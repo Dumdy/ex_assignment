@@ -44,12 +44,37 @@ defmodule ExAssignment.Todos do
 
   ASSIGNMENT: ...
   """
-  def get_recommended() do
-    list_todos(:open)
-    |> case do
-      [] -> nil
-      todos -> Enum.take_random(todos, 1) |> List.first()
-    end
+
+  def get_recommended(todos) do
+    # Calculate urgency score for each todo based on its priority
+    priority_values = Enum.map(todos, & &1.priority)
+    max_priority = Enum.max(priority_values)
+    min_priority = Enum.min(priority_values)
+
+    urgency_scores =
+      todos
+      |> Enum.map(fn todo ->
+        priority_ratio = (max_priority - todo.priority + 1) / (max_priority - min_priority + 1)
+
+        {todo, priority_ratio}
+      end)
+
+    # Calculate probability for each todo
+    sum_scores = Enum.reduce(urgency_scores, 0, fn {_, score}, acc -> acc + score end)
+
+    probabilities = Enum.map(urgency_scores, fn {todo, score} -> {todo, score / sum_scores} end)
+
+    # Randomly select a todo based on its probability
+    random_prob = :rand.uniform()
+
+    {recommended, _} =
+      probabilities
+      # Sort by decreasing probability
+      |> Enum.sort_by(fn {_, prob} -> -prob end)
+      |> Enum.find(fn {_, prob} -> random_prob < prob end) ||
+        Enum.at(probabilities, 0)
+
+    recommended
   end
 
   @doc """
