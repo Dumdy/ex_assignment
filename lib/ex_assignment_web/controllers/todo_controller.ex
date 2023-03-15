@@ -16,6 +16,7 @@ defmodule ExAssignmentWeb.TodoController do
     )
   end
 
+  @spec new(Plug.Conn.t(), any) :: Plug.Conn.t()
   def new(conn, _params) do
     changeset = Todos.change_todo(%Todo{})
     render(conn, :new, changeset: changeset)

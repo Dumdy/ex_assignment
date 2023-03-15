@@ -19,6 +19,4 @@ defmodule ExAssignment.TodosFixtures do
 
     todo
   end
-
-  
 end
