@@ -40,11 +40,20 @@ defmodule ExAssignment.Todos do
   end
 
   @doc """
-  Returns the next todo that is recommended to be done by the system.
 
-  ASSIGNMENT: ...
+  Returns a recommended todo item from a list of todos, based on each todo's priority score.
+
+  Example:
+  iex> todos =  [%Todo{priority: 2}, %Todo{priority: 5} ]
+  iex> get_recommended(todos)
+  %Todo{priority: 2}
+
+  The `get_recommended/1` function calculates an urgency score for each todo item in the input list based on its priority value.
+  It then calculates a probability score for each todo item based on its urgency score relative to the other todo items in the list.
+  The function randomly selects a todo item from the list based on its probability score, and returns the recommended todo item.
+  If multiple todo items have the same highest probability score, the function chooses one of them randomly.
+  The function assumes that the `priority` field of each todo item is a non-negative integer.
   """
-
   def get_recommended(todos) do
     # Calculate urgency score for each todo based on its priority
     priority_values = Enum.map(todos, & &1.priority)
@@ -71,8 +80,7 @@ defmodule ExAssignment.Todos do
       probabilities
       # Sort by decreasing probability
       |> Enum.sort_by(fn {_, prob} -> -prob end)
-      |> Enum.find(fn {_, prob} -> random_prob < prob end) ||
-        Enum.at(probabilities, 0)
+      |> Enum.find(fn {_, prob} -> random_prob <= prob end) || Enum.at(probabilities, 0)
 
     recommended
   end
